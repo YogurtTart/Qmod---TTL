@@ -38,8 +38,8 @@ void loop() {
       Serial.print(device[currentDeviceIndex]);
       Serial.print(": V=");
       Serial.print(m.Voltage);
-      Serial.print(" I=");
-      Serial.println(m.Current);
+      Serial.print(" Alarm = ");
+      Serial.println(m.AlarmStatus);
     }
     
     // Move to next device

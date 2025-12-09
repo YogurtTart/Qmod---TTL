@@ -13,10 +13,6 @@ void postTransmission() {
     digitalWrite(RS485_PIN, LOW); 
 }
 
-uint32_t combineRegisters(uint16_t highRegister, uint16_t lowRegister) {
-    return ((uint32_t)highRegister << 16) | lowRegister;
-}
-
 bool readRegisters(ModbusMaster &meter, int address) {  
   // Read all registers (0-9)
   uint8_t result = meter.readInputRegisters(0, 10);
@@ -31,19 +27,16 @@ bool readRegisters(ModbusMaster &meter, int address) {
   m.Voltage = meter.getResponseBuffer(0);
   
   // Combine low and high 16-bit for Current (registers 1 & 2)
-  uint16_t currentLow = meter.getResponseBuffer(1);
-  uint16_t currentHigh = meter.getResponseBuffer(2);
-  m.Current = combineRegisters(currentHigh, currentLow);
+  m.currentLow = meter.getResponseBuffer(1);
+  m.currentHigh = meter.getResponseBuffer(2);
   
   // Combine low and high 16-bit for Power (registers 3 & 4)
-  uint16_t powerLow = meter.getResponseBuffer(3);
-  uint16_t powerHigh = meter.getResponseBuffer(4);
-  m.Power = combineRegisters(powerHigh, powerLow);
+  m.powerLow = meter.getResponseBuffer(3);
+  m.powerHigh = meter.getResponseBuffer(4);
   
   // Combine low and high 16-bit for Energy (registers 5 & 6)
-  uint16_t energyLow = meter.getResponseBuffer(5);
-  uint16_t energyHigh = meter.getResponseBuffer(6);
-  m.Energy = combineRegisters(energyHigh, energyLow);
+  m.energyLow = meter.getResponseBuffer(5);
+  m.energyHigh = meter.getResponseBuffer(6);
   
   // Store single 16-bit values
   m.PowerFactor = meter.getResponseBuffer(7);
