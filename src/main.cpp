@@ -1,41 +1,36 @@
-#include "Arduino.h"
-#include "EspToMeter.h"
+#include <ModbusMaster.h>
+#include <SoftwareSerial.h>
 
-int device[] = {1, 2, 3};
-const int deviceCount = sizeof(device) / sizeof(device[0]); // Dynamic array size
-
-unsigned long previousMillis = 0;
-const unsigned long interval = 2000; // 2 second interval
-int currentDeviceIndex = 0;
+SoftwareSerial modbusSerial(12, 13);  // RX=12, TX=13
+ModbusMaster meter1, meter2;
 
 void setup() {
   Serial.begin(9600);
+  modbusSerial.begin(9600);
+  
+  meter1.begin(1, modbusSerial);  // Meter address 1
+  meter2.begin(2, modbusSerial);  // Meter address 2
+  
+  Serial.println("READING INPUT REGISTERS...");
 }
 
 void loop() {
-  unsigned long currentMillis = millis();
-  
-  // Check if it's time to query the next device
-  if (currentMillis - previousMillis >= interval) {
-    previousMillis = currentMillis;
-    
-    // Query current device
-    bool success = initMasterQuery(device[currentDeviceIndex]);
-    
-    if (success) {
-      // Access the meter readings from the global 'm' struct
-      // Example: Serial.println(m.Voltage);
-      // Example: Serial.println(m.Current);
-    }
-    
-    // Move to next device
-    currentDeviceIndex++;
-    
-    // Wrap around to start if we've reached the end
-    if (currentDeviceIndex >= deviceCount) {
-      currentDeviceIndex = 0;
-    }
+  // Read Meter 1 - Input Register 0
+  if (meter1.readInputRegisters(0, 1) == 0) {
+    uint16_t value1 = meter1.getResponseBuffer(0);
+    Serial.print("M1: ");
+    Serial.println(value1);
   }
   
-  // Your other non-blocking code can run here
+  delay(100);
+  
+  // Read Meter 2 - Input Register 0  
+  if (meter2.readInputRegisters(0, 1) == 0) {
+    uint16_t value2 = meter2.getResponseBuffer(0);
+    Serial.print("M2: ");
+    Serial.println(value2);
+  }
+  
+  Serial.println("---");
+  delay(2000);
 }
