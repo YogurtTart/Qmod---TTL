@@ -70,12 +70,9 @@ bool QueryMeter(int address, int index){  // Changed return type to bool
   meter.clearTransmitBuffer();
   
   // Small delay to ensure clean state
-  delay(300);
+  delay(50);
 
   bool success = readRegisters(meter, address, index);
-  
-  // Add minimum delay between Modbus queries
-  delay(100);
   
   return success;
 }

@@ -1,5 +1,6 @@
 #pragma once
 #include <ModbusRTU.h>
+#include "EspToMeter.h"
 
 struct MeterParam;
 

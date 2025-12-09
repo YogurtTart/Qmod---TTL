@@ -37,12 +37,10 @@ void loop() {
     
     // Optional: Print results or handle failures
     if (success) {
-      Serial.print("Device ");
-      Serial.print(device[currentDeviceIndex]);
-      Serial.print(": V=");
-      Serial.print(m.Voltage);
-      Serial.print(" Alarm = ");
-      Serial.println(m.AlarmStatus);
+      // Serial.print("Device ");
+      // Serial.print(device[currentDeviceIndex]);
+      // Serial.print(": V=");
+      // Serial.print(m.Voltage);
     }
     
     // Move to next device
@@ -55,6 +53,5 @@ void loop() {
   }
 
   loopRTU();
-  
-  // Your other non-blocking code can run here
+
 }
