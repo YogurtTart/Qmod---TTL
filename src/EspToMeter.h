@@ -3,8 +3,6 @@
 #include <ModbusMaster.h>
 #include <SoftwareSerial.h>
 
-const int RS485_PIN = 5;
-
 struct MeterParam{
   uint16_t Voltage;     //Measuring range:80～260V
   uint16_t currentLow, currentHigh;     //Measuring range: 0～10A(PZEM-004T-10A); 0～100A(PZEM-004T-100A)
@@ -16,8 +14,8 @@ struct MeterParam{
 };
 
 bool readRegisters(ModbusMaster &meter, int address);
-void postTransmission();
-void preTransmission();
+// void postTransmission();
+// void preTransmission();
 
 // Returns true if successful, false if failed
 extern bool initMasterQuery();

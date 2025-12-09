@@ -5,13 +5,8 @@ SoftwareSerial s(12, 13);
 ModbusMaster meter;
 MeterParam m;
 
-void preTransmission() { 
-    digitalWrite(RS485_PIN, HIGH); 
-}
-
-void postTransmission() { 
-    digitalWrite(RS485_PIN, LOW); 
-}
+// void preTransmission() {/* TTL doesn't need this */}
+// void postTransmission() {/* TTL doesn't need this */}
 
 bool readRegisters(ModbusMaster &meter, int address) {  
   // Read all registers (0-9)
@@ -51,14 +46,12 @@ bool readRegisters(ModbusMaster &meter, int address) {
 }
 
 bool initMasterQuery(){
-  pinMode(RS485_PIN, OUTPUT);
-  digitalWrite(RS485_PIN, LOW);
 
   s.begin(9600);
 
   meter.begin(1, s);
-  meter.preTransmission(preTransmission);
-  meter.postTransmission(postTransmission);
+  // meter.preTransmission(preTransmission);
+  // meter.postTransmission(postTransmission);
     
   Serial.println("✅ Modbus initialized");
   return true;
@@ -69,8 +62,8 @@ bool QueryMeter(int address){  // Changed return type to bool
   Serial.println(address);
   meter.begin(address, s);
   
-  meter.preTransmission(preTransmission);
-  meter.postTransmission(postTransmission);
+  // meter.preTransmission(preTransmission);
+  // meter.postTransmission(postTransmission);
   meter.clearResponseBuffer();
   meter.clearTransmitBuffer();
   
