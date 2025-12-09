@@ -8,7 +8,7 @@ MeterParam m;
 // void preTransmission() {/* TTL doesn't need this */}
 // void postTransmission() {/* TTL doesn't need this */}
 
-bool readRegisters(ModbusMaster &meter, int address) {  
+bool readRegisters(ModbusMaster &meter, int address, int index) {  
   // Read all registers (0-9)
   uint8_t result = meter.readInputRegisters(0, 10);
   
@@ -37,6 +37,8 @@ bool readRegisters(ModbusMaster &meter, int address) {
   m.PowerFactor = meter.getResponseBuffer(7);
   m.Frequency = meter.getResponseBuffer(8);
   m.AlarmStatus = meter.getResponseBuffer(9);
+
+  StoreHreg(m, index);
   
   // Print success message
   Serial.print("Successfully read data from device ");
@@ -57,7 +59,7 @@ bool initMasterQuery(){
   return true;
 }
 
-bool QueryMeter(int address){  // Changed return type to bool
+bool QueryMeter(int address, int index){  // Changed return type to bool
   Serial.print("Querying device ");
   Serial.println(address);
   meter.begin(address, s);
@@ -70,7 +72,7 @@ bool QueryMeter(int address){  // Changed return type to bool
   // Small delay to ensure clean state
   delay(300);
 
-  bool success = readRegisters(meter, address);
+  bool success = readRegisters(meter, address, index);
   
   // Add minimum delay between Modbus queries
   delay(100);

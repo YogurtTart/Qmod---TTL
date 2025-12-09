@@ -1,5 +1,6 @@
 #include "Arduino.h"
 #include "EspToMeter.h"
+#include "EspToQmod.h"
 
 int device[] = {1, 2, 3};
 const int deviceCount = sizeof(device) / sizeof(device[0]);
@@ -17,6 +18,8 @@ void setup() {
   } else {
     Serial.println("✅ ModBus initialized successfully");
   }
+
+  initSlave(deviceCount);
   
   Serial.print("Total devices to query: ");
   Serial.println(deviceCount);
@@ -30,7 +33,7 @@ void loop() {
     previousMillis = currentMillis;
     
     // Query current device
-    bool success = QueryMeter(device[currentDeviceIndex]);
+    bool success = QueryMeter(device[currentDeviceIndex], currentDeviceIndex);
     
     // Optional: Print results or handle failures
     if (success) {
@@ -50,6 +53,8 @@ void loop() {
       currentDeviceIndex = 0;
     }
   }
+
+  loopRTU();
   
   // Your other non-blocking code can run here
 }

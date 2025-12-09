@@ -2,6 +2,7 @@
 
 #include <ModbusMaster.h>
 #include <SoftwareSerial.h>
+#include "EspToQmod.h"
 
 struct MeterParam{
   uint16_t Voltage;     //Measuring range:80～260V
@@ -13,13 +14,13 @@ struct MeterParam{
   uint16_t AlarmStatus; //
 };
 
-bool readRegisters(ModbusMaster &meter, int address);
+bool readRegisters(ModbusMaster &meter, int address, int index);
 // void postTransmission();
 // void preTransmission();
 
 // Returns true if successful, false if failed
 extern bool initMasterQuery();
-extern bool QueryMeter(int address);  // Changed from void to bool
+extern bool QueryMeter(int address, int index);  // Changed from void to bool
 
 // Extern the global MeterParam to access readings
 extern MeterParam m;
