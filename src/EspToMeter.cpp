@@ -39,6 +39,7 @@ bool readRegisters(ModbusMaster &meter, int address, int index) {
   m.AlarmStatus = meter.getResponseBuffer(9);
 
   StoreHreg(m, index);
+  loopRTU();
   
   // Print success message
   Serial.print("Successfully read data from device ");
@@ -54,24 +55,20 @@ bool initMasterQuery(){
   meter.begin(1, s);
   // meter.preTransmission(preTransmission);
   // meter.postTransmission(postTransmission);
-    
+  meter.clearResponseBuffer();
+  meter.clearTransmitBuffer();
+  
   Serial.println("✅ Modbus initialized");
   return true;
 }
 
-bool QueryMeter(int address, int index){  // Changed return type to bool
-  Serial.print("Querying device ");
-  Serial.println(address);
+bool QueryMeter(int address, int index) {
+  // Setup meter
   meter.begin(address, s);
-  
-  // meter.preTransmission(preTransmission);
-  // meter.postTransmission(postTransmission);
   meter.clearResponseBuffer();
   meter.clearTransmitBuffer();
-  
-  // Small delay to ensure clean state
-  delay(50);
 
+  loopRTU();
   bool success = readRegisters(meter, address, index);
   
   return success;

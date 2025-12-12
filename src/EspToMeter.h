@@ -15,12 +15,12 @@ struct MeterParam{
 };
 
 bool readRegisters(ModbusMaster &meter, int address, int index);
-// void postTransmission();
-// void preTransmission();
 
-// Returns true if successful, false if failed
+// Initialize Modbus master
 extern bool initMasterQuery();
-extern bool QueryMeter(int address, int index);  // Changed from void to bool
+
+// Execute query (returns immediately with success/fail)
+extern bool QueryMeter(int address, int index);
 
 // Extern the global MeterParam to access readings
 extern MeterParam m;
