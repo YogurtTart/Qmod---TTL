@@ -2,7 +2,7 @@
 #include "EspToMeter.h"
 #include "EspToQmod.h"
 
-int device[] = {1, 2};
+int device[] = {1, 2, 3};
 const int deviceCount = sizeof(device) / sizeof(device[0]);
 
 // State machine states

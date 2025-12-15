@@ -74,9 +74,9 @@ bool readRegisters(ModbusMaster &meter, int address, int index) {
 bool initMasterQuery(){
 
   s.begin(9600);
-  s.setTimeout(100);
 
   meter.begin(1, s);
+  meter.setResponseTimeout(200);
   // meter.preTransmission(preTransmission);
   // meter.postTransmission(postTransmission);
   meter.clearResponseBuffer();
