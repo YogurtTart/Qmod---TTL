@@ -42,7 +42,3 @@ void StoreHreg(const MeterParam& m, int deviceIndex) {
   Serial.println(baseRegister);
 }
 
-void loopRTU() {
-  mb.task();
-  yield();
-}

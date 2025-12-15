@@ -15,6 +15,29 @@ bool readRegisters(ModbusMaster &meter, int address, int index) {
   if (result != meter.ku8MBSuccess) {
     Serial.print("Failed to read registers from device at address ");
     Serial.println(address);
+
+    // Check specific errors
+    if (result == meter.ku8MBResponseTimedOut) {
+      Serial.println("Timeout (no response)");
+    } else if (result == meter.ku8MBIllegalFunction) {
+      Serial.println("Illegal function");
+    } else if (result == meter.ku8MBIllegalDataAddress) {
+      Serial.println("Invalid register address");
+    } else if (result == meter.ku8MBIllegalDataValue) {
+      Serial.println("Invalid data value");
+    } else if (result == meter.ku8MBSlaveDeviceFailure) {
+      Serial.println("Slave device failure");
+    } else if (result == meter.ku8MBInvalidSlaveID) {
+      Serial.println("Invalid slave ID");
+    } else if (result == meter.ku8MBInvalidFunction) {
+      Serial.println("Invalid function");
+    } else if (result == meter.ku8MBInvalidCRC) {
+      Serial.println("CRC error");
+    } else {
+      Serial.print("Unknown error: 0x");
+      Serial.println(result, HEX);
+    }
+
     return false;
   }
   
@@ -38,8 +61,8 @@ bool readRegisters(ModbusMaster &meter, int address, int index) {
   m.Frequency = meter.getResponseBuffer(8);
   m.AlarmStatus = meter.getResponseBuffer(9);
 
+  mb.task();
   StoreHreg(m, index);
-  loopRTU();
   
   // Print success message
   Serial.print("Successfully read data from device ");
@@ -51,6 +74,7 @@ bool readRegisters(ModbusMaster &meter, int address, int index) {
 bool initMasterQuery(){
 
   s.begin(9600);
+  s.setTimeout(100);
 
   meter.begin(1, s);
   // meter.preTransmission(preTransmission);
@@ -68,8 +92,9 @@ bool QueryMeter(int address, int index) {
   meter.clearResponseBuffer();
   meter.clearTransmitBuffer();
 
-  loopRTU();
+  mb.task();
   bool success = readRegisters(meter, address, index);
-  
+  mb.task();
+
   return success;
 }

@@ -2,7 +2,7 @@
 #include "EspToMeter.h"
 #include "EspToQmod.h"
 
-int device[] = {1, 2, 3};
+int device[] = {1, 2};
 const int deviceCount = sizeof(device) / sizeof(device[0]);
 
 // State machine states
@@ -15,13 +15,11 @@ enum QueryState {
 // State machine variables
 QueryState currentState = IDLE;
 unsigned long batchTimer = 0;
-unsigned long queryStartTime = 0;
 int currentDeviceIndex = 0;
 bool queryInProgress = false;
 
 // Timing constants
 const unsigned long BATCH_INTERVAL = 2000;  // 2 seconds between complete batches
-const unsigned long QUERY_TIMEOUT = 500;    // 500ms timeout for each device query
 
 void setup() {
   Serial.begin(9600);
@@ -45,7 +43,7 @@ void setup() {
 
 void loop() {
   // Always process Modbus slave tasks
-  loopRTU();
+  mb.task();
   
   unsigned long currentMillis = millis();
   
@@ -73,8 +71,10 @@ void loop() {
         Serial.print(deviceCount);
         Serial.println(")");
         
+        mb.task();
         bool success = QueryMeter(device[currentDeviceIndex], currentDeviceIndex);
-        
+        mb.task();
+
         if (success) {
           // Successfully got response
           Serial.print("  ✓ V=");
@@ -90,23 +90,18 @@ void loop() {
         } else {
           Serial.println("  ✗ Query failed");
         }
-        
-        // Start timeout timer
-        queryStartTime = currentMillis;
-        queryInProgress = true;
+
       }
       
-      // Check if timeout has passed
-      if (currentMillis - queryStartTime >= QUERY_TIMEOUT) {
         // Move to next device
         currentDeviceIndex++;
-        queryInProgress = false;
         
         // Check if batch is complete
         if (currentDeviceIndex >= deviceCount) {
           currentState = BATCH_COMPLETE;
         }
-      }
+      
+      
       break;
       
     case BATCH_COMPLETE:
@@ -119,6 +114,6 @@ void loop() {
       break;
   }
   
-  // Process slave tasks again for responsiveness
-  loopRTU();
+  mb.task();
+
 }
