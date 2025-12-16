@@ -72,17 +72,22 @@ bool readRegisters(ModbusMaster &meter, int address, int index) {
 }
 
 bool initMasterQuery(){
-
   s.begin(9600);
 
   meter.begin(1, s);
-  meter.setResponseTimeout(200);
+  
+  meter.setResponseTimeout(eepromConfig.timeout); 
+  
   // meter.preTransmission(preTransmission);
   // meter.postTransmission(postTransmission);
   meter.clearResponseBuffer();
   meter.clearTransmitBuffer();
   
   Serial.println("✅ Modbus initialized");
+  Serial.print("Timeout set to: ");
+  Serial.print(eepromConfig.timeout);
+  Serial.println(" ms");
+  
   return true;
 }
 

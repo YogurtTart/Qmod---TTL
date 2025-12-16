@@ -3,6 +3,7 @@
 #include <ModbusMaster.h>
 #include <SoftwareSerial.h>
 #include "EspToQmod.h"
+#include "EEPromHandler.h"
 
 struct MeterParam{
   uint16_t Voltage;     //Measuring range:80～260V

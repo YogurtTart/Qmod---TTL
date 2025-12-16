@@ -1,6 +1,7 @@
 #include "Arduino.h"
 #include "EspToMeter.h"
 #include "EspToQmod.h"
+#include "EEPromHandler.h" 
 
 int device[] = {1, 2, 3};
 const int deviceCount = sizeof(device) / sizeof(device[0]);
@@ -18,13 +19,13 @@ unsigned long batchTimer = 0;
 int currentDeviceIndex = 0;
 bool queryInProgress = false;
 
-// Timing constants
-const unsigned long BATCH_INTERVAL = 2000;  // 2 seconds between complete batches
-
 void setup() {
   Serial.begin(9600);
   Serial.println("Starting Modbus Multi-Device Test...");
 
+  // Load EEPROM configuration FIRST
+  LoadEEPROM();
+  
   if (!initMasterQuery()) {
     Serial.println("❌ ModBus initialization failed!");
   } else {
@@ -39,6 +40,10 @@ void setup() {
   // Initialize timer
   batchTimer = millis();
   currentState = IDLE;
+  
+  Serial.print("Poll interval: ");
+  Serial.print(eepromConfig.pollInterval);
+  Serial.println(" ms");
 }
 
 void loop() {
@@ -51,8 +56,8 @@ void loop() {
   switch (currentState) {
     
     case IDLE:
-      // Wait for batch interval to elapse
-      if (currentMillis - batchTimer >= BATCH_INTERVAL) {
+      // Wait for batch interval to elapse - using eepromConfig.pollInterval
+      if (currentMillis - batchTimer >= eepromConfig.pollInterval) {
         Serial.println("=== Starting new batch ===");
         currentDeviceIndex = 0;
         currentState = QUERYING_DEVICE;
@@ -108,6 +113,9 @@ void loop() {
       Serial.println("=== Batch complete ===");
       Serial.println();
       
+      // Check for EEPROM updates at the end of each batch
+      CompareAndUpdateEEPROM();
+      
       // Reset timer and go back to idle
       batchTimer = currentMillis;
       currentState = IDLE;
@@ -115,5 +123,4 @@ void loop() {
   }
   
   mb.task();
-
 }
