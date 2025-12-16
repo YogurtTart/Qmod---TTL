@@ -1,0 +1,1 @@
+It is important that you use the PIO file commited in this github and not install the modbusmaster library newly from the vscode itself, as i have edited the modbusmaster library to have a global timeout function.
